@@ -19,7 +19,7 @@ class CustomCardsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Custom Cards"),
+        title: Text("Custom Cards",style: TextStyle(color: Colors.white),),
         backgroundColor: Colors.purple,
       ),
 

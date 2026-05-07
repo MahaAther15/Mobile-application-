@@ -15,15 +15,34 @@ class DiscoveryScreen extends StatefulWidget {
 
 class _DiscoveryScreenState extends State<DiscoveryScreen> {
   String _selectedCategory = 'All';
+  String _searchQuery = '';
 
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    final filteredProducts = _selectedCategory == 'All'
+
+    // Step 1: First filter by category
+    final categoryFilteredProducts = _selectedCategory == 'All'
         ? appState.products
         : appState.products
               .where((p) => p.category == _selectedCategory)
               .toList();
+
+    // Step 2: Then apply search filter on category-filtered products
+    final filteredProducts = categoryFilteredProducts.where((p) {
+      if (_searchQuery.isEmpty) return true;
+
+      final searchWords = _searchQuery.toLowerCase().trim().split(' ');
+
+      // Search in product properties
+      return searchWords.every(
+        (word) =>
+            p.name.toLowerCase().contains(word) ||
+            p.description.toLowerCase().contains(word) ||
+            p.category.toLowerCase().contains(word) ||
+            p.tags.any((tag) => tag.toLowerCase().contains(word)),
+      );
+    }).toList();
 
     return Scaffold(
       appBar: AppBar(
@@ -38,32 +57,34 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
       bottomNavigationBar: const BotanicalBottomNavBar(currentIndex: 1),
       body: Column(
         children: [
-          // Search Bar
+          // SEARCH BOX
           Padding(
-            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
             child: TextField(
+              onChanged: (value) {
+                setState(() {
+                  _searchQuery = value;
+                });
+              },
               decoration: InputDecoration(
-                hintText: 'SEARCH ARRANGEMENTS...',
-                hintStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: AppTheme.outline.withValues(alpha: 0.5),
-                ),
+                hintText:
+                    'Search in ${_selectedCategory == 'All' ? 'all products' : _selectedCategory}...',
                 prefixIcon: const Icon(Icons.search, size: 20),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
                     color: AppTheme.outline.withValues(alpha: 0.2),
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(color: AppTheme.primaryGreen),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
           ),
 
-          // Categories Horizontal Scroll
+          // CATEGORY CHIPS
           SizedBox(
             height: 40,
             child: ListView(
@@ -73,60 +94,134 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
                 _DiscoveryCategoryChip(
                   label: 'All',
                   isActive: _selectedCategory == 'All',
-                  onTap: () => setState(() => _selectedCategory = 'All'),
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = 'All';
+                      _searchQuery =
+                          ''; // Optional: Clear search when changing category
+                    });
+                  },
                 ),
                 _DiscoveryCategoryChip(
                   label: 'Seasonal',
                   isActive: _selectedCategory == 'Seasonal',
-                  onTap: () => setState(() => _selectedCategory = 'Seasonal'),
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = 'Seasonal';
+                      _searchQuery =
+                          ''; // Optional: Clear search when changing category
+                    });
+                  },
                 ),
                 _DiscoveryCategoryChip(
                   label: 'Boutique',
                   isActive: _selectedCategory == 'Boutique',
-                  onTap: () => setState(() => _selectedCategory = 'Boutique'),
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = 'Boutique';
+                      _searchQuery =
+                          ''; // Optional: Clear search when changing category
+                    });
+                  },
                 ),
                 _DiscoveryCategoryChip(
                   label: 'Artisanal',
                   isActive: _selectedCategory == 'Artisanal',
-                  onTap: () => setState(() => _selectedCategory = 'Artisanal'),
+                  onTap: () {
+                    setState(() {
+                      _selectedCategory = 'Artisanal';
+                      _searchQuery =
+                          ''; // Optional: Clear search when changing category
+                    });
+                  },
                 ),
               ],
             ),
           ),
 
-          const SizedBox(height: 24),
-
-          // Results Grid
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                int crossAxisCount = 2;
-                if (constraints.maxWidth > 1200) {
-                  crossAxisCount = 5;
-                } else if (constraints.maxWidth > 900) {
-                  crossAxisCount = 4;
-                } else if (constraints.maxWidth > 600) {
-                  crossAxisCount = 3;
-                }
-                return GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: crossAxisCount,
-                    childAspectRatio: 0.65,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 24,
+          // RESULTS COUNT
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  '${filteredProducts.length} products found',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppTheme.textSecondary,
                   ),
-                  itemCount: filteredProducts.length,
-                  itemBuilder: (context, index) {
-                    final product = filteredProducts[index];
-                    return ProductCard(
-                      product: product,
-                      onTap: () => context.go('/product/${product.id}'),
-                    );
-                  },
-                );
-              },
+                ),
+                if (_searchQuery.isNotEmpty)
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _searchQuery = '';
+                      });
+                    },
+                    child: const Text('Clear Search'),
+                  ),
+              ],
             ),
+          ),
+
+          // GRID RESULTS
+          Expanded(
+            child: filteredProducts.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.search_off,
+                          size: 64,
+                          color: AppTheme.textSecondary.withValues(alpha: 0.5),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No products found',
+                          style: Theme.of(context).textTheme.titleMedium
+                              ?.copyWith(color: AppTheme.textSecondary),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try adjusting your search or category filter',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: AppTheme.textSecondary),
+                        ),
+                      ],
+                    ),
+                  )
+                : LayoutBuilder(
+                    builder: (context, constraints) {
+                      int crossAxisCount = 2;
+
+                      if (constraints.maxWidth > 1200) {
+                        crossAxisCount = 5;
+                      } else if (constraints.maxWidth > 900) {
+                        crossAxisCount = 4;
+                      } else if (constraints.maxWidth > 600) {
+                        crossAxisCount = 3;
+                      }
+
+                      return GridView.builder(
+                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: crossAxisCount,
+                          childAspectRatio: 0.65,
+                          crossAxisSpacing: 16,
+                          mainAxisSpacing: 24,
+                        ),
+                        itemCount: filteredProducts.length,
+                        itemBuilder: (context, index) {
+                          final product = filteredProducts[index];
+                          return ProductCard(
+                            product: product,
+                            onTap: () => context.go('/product/${product.id}'),
+                          );
+                        },
+                      );
+                    },
+                  ),
           ),
         ],
       ),
@@ -134,6 +229,7 @@ class _DiscoveryScreenState extends State<DiscoveryScreen> {
   }
 }
 
+// CATEGORY CHIP WIDGET
 class _DiscoveryCategoryChip extends StatelessWidget {
   final String label;
   final bool isActive;
@@ -159,15 +255,13 @@ class _DiscoveryCategoryChip extends StatelessWidget {
                 ? AppTheme.primaryGreen
                 : AppTheme.outline.withValues(alpha: 0.3),
           ),
-          borderRadius: BorderRadius.circular(9999),
+          borderRadius: BorderRadius.circular(999),
         ),
-        child: Center(
-          child: Text(
-            label.toUpperCase(),
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: isActive ? Colors.white : AppTheme.primaryGreen,
-              fontSize: 10,
-            ),
+        child: Text(
+          label.toUpperCase(),
+          style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: isActive ? Colors.white : AppTheme.primaryGreen,
+            fontSize: 10,
           ),
         ),
       ),

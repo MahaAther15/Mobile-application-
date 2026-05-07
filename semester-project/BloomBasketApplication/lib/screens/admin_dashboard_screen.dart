@@ -11,9 +11,9 @@ class AdminDashboardScreen extends StatelessWidget {
         title: Text(
           'ADMIN DASHBOARD',
           style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                letterSpacing: 4,
-                fontWeight: FontWeight.w700,
-              ),
+            letterSpacing: 4,
+            fontWeight: FontWeight.w700,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -24,7 +24,11 @@ class AdminDashboardScreen extends StatelessWidget {
             // Stats Row
             Row(
               children: [
-                _StatCard(title: 'TODAY\'S SALES', value: '\$1,240', trend: '+12%'),
+                _StatCard(
+                  title: 'TODAY\'S SALES',
+                  value: '\$1,240',
+                  trend: '+12%',
+                ),
                 const SizedBox(width: 16),
                 _StatCard(title: 'NEW ORDERS', value: '18', trend: '+5%'),
               ],
@@ -32,9 +36,17 @@ class AdminDashboardScreen extends StatelessWidget {
             const SizedBox(height: 16),
             Row(
               children: [
-                _StatCard(title: 'PENDING', value: '4', color: AppTheme.richGold),
+                _StatCard(
+                  title: 'PENDING',
+                  value: '4',
+                  color: AppTheme.richGold,
+                ),
                 const SizedBox(width: 16),
-                _StatCard(title: 'LOW STOCK', value: '2', color: Colors.redAccent),
+                _StatCard(
+                  title: 'LOW STOCK',
+                  value: '2',
+                  color: Colors.redAccent,
+                ),
               ],
             ),
 
@@ -43,9 +55,9 @@ class AdminDashboardScreen extends StatelessWidget {
             Text(
               'RECENT ORDERS',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    letterSpacing: 3,
-                    fontWeight: FontWeight.w700,
-                  ),
+                letterSpacing: 3,
+                fontWeight: FontWeight.w700,
+              ),
             ),
 
             const SizedBox(height: 16),
@@ -61,7 +73,9 @@ class AdminDashboardScreen extends StatelessWidget {
                   contentPadding: EdgeInsets.zero,
                   title: Text(
                     'ORDER #BB-${9012 - index}',
-                    style: Theme.of(context).textTheme.labelLarge?.copyWith(fontSize: 12),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.labelLarge?.copyWith(fontSize: 12),
                   ),
                   subtitle: Text(
                     'May 26, 2026 • 2 items',
@@ -69,7 +83,9 @@ class AdminDashboardScreen extends StatelessWidget {
                   ),
                   trailing: Text(
                     '\$${(120 - index * 10).toStringAsFixed(0)}',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 );
               },
@@ -110,9 +126,9 @@ class _StatCard extends StatelessWidget {
             Text(
               title,
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    fontSize: 8,
-                    color: AppTheme.outline,
-                  ),
+                fontSize: 8,
+                color: AppTheme.outline,
+              ),
             ),
             const SizedBox(height: 8),
             Row(
@@ -121,14 +137,18 @@ class _StatCard extends StatelessWidget {
                 Text(
                   value,
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        fontSize: 24,
-                        color: color ?? AppTheme.primaryGreen,
-                      ),
+                    fontSize: 24,
+                    color: color ?? AppTheme.primaryGreen,
+                  ),
                 ),
                 if (trend != null)
                   Text(
                     trend!,
-                    style: const TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.w700),
+                    style: const TextStyle(
+                      color: Colors.green,
+                      fontSize: 10,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
               ],
             ),

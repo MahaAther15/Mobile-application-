@@ -1,3 +1,4 @@
+import 'package:bloombasket/screens/uploadscreen.dart';
 import 'package:go_router/go_router.dart';
 import 'screens/splash_screen.dart';
 import 'screens/home_screen.dart';
@@ -59,6 +60,10 @@ final router = GoRouter(
     GoRoute(
       path: '/admin',
       builder: (context, state) => const AdminDashboardScreen(),
+    ),
+    GoRoute(
+      path: '/upload',
+      builder: (context, state) => UploadScreen(),
     ),
   ],
 );

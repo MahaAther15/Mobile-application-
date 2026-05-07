@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'app_theme.dart';
 import 'routes.dart';
 import 'providers/app_state.dart';
+import 'screens/uploadscreen.dart';
 
 void main() {
   runApp(
